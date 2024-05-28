@@ -6,52 +6,48 @@ from Bio.Blast import NCBIWWW, NCBIXML
 # Define your email for NCBI
 Entrez.email = "joseph.bedell@gmail.com"
 
-# Define the GenBank accession numbers for CLV1 and BAM3
-clv1_accession = "NM_001198022"
-bam3_accession = "NM_127982"
+# Define the GenBank accession numbers for Trifolium repens samples
+accessions = ["SAMEA110451297", "SAMEA110451296", "SAMEA110450218"]
 
-def fetch_sequence(accession, output_file):
-    """Fetch the DNA sequence for a given GenBank accession number and save it to a file."""
+def fetch_sequence(accession):
+    """Fetch the DNA sequence for a given GenBank accession number."""
     print(f"Fetching sequence for {accession}...")
     handle = Entrez.efetch(db="nucleotide", id=accession, rettype="fasta", retmode="text")
     record = SeqIO.read(handle, "fasta")
     handle.close()
-    
+    output_file = f"{accession}.fna"
     print(f"Saving sequence to {output_file}...")
     with open(output_file, "w") as file:
         SeqIO.write(record, file, "fasta")
-    
     return record.seq
 
-def search_online_blast(sequence, gene_name):
+def search_online_blast(sequence, accession):
     """Search for homologs of a given sequence using NCBI online BLAST."""
-    print(f"Performing BLAST search for {gene_name}...")
+    print(f"Performing BLAST search for {accession}...")
     result_handle = NCBIWWW.qblast("blastn", "nt", str(sequence))
     blast_records = NCBIXML.read(result_handle)
     return blast_records
 
-def print_blast_results(blast_records, gene_name):
+def print_blast_results(blast_records, accession):
     """Print BLAST search results."""
-    print(f"\n{gene_name} Homologs:")
+    print(f"\n{accession} Homologs:")
     for alignment in blast_records.alignments:
         for hsp in alignment.hsps:
             if hsp.expect < 0.05:
                 print(f"Sequence: {alignment.title}\nLength: {alignment.length}\nE-value: {hsp.expect}\n")
 
 def main():
-    # Fetch sequences for CLV1 and BAM3 and save them to files
-    clv1_sequence = fetch_sequence(clv1_accession, "clv1.NM_001198022.fna")
-    bam3_sequence = fetch_sequence(bam3_accession, "bam3.NM_127982.fna")
-
-    # Search for CLV1 homologs
-    clv1_blast_results = search_online_blast(clv1_sequence, "CLV1")
-    print_blast_results(clv1_blast_results, "CLV1")
-
-    # Search for BAM3 homologs
-    bam3_blast_results = search_online_blast(bam3_sequence, "BAM3")
-    print_blast_results(bam3_blast_results, "BAM3")
+    for accession in accessions:
+        # Fetch sequence and save to file
+        sequence = fetch_sequence(accession)
+        
+        # Perform BLAST search
+        blast_results = search_online_blast(sequence, accession)
+        
+        # Print BLAST results
+        print_blast_results(blast_results, accession)
 
 if __name__ == "__main__":
-    print("Starting CLAVATA homolog search script...")
+    print("Starting BLAST search script for Trifolium repens accessions...")
     main()
     print("Script completed.")
