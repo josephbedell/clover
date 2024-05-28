@@ -26,15 +26,20 @@ clover_genome_file = "GCA_030408175.1_genomic.fna.gz"
 clover_genome_unzipped_file = "GCA_030408175.1_genomic.fna"
 
 def download_clover_genome():
-    """Download the clover genome and create a BLAST database."""
-    logging.info("Downloading clover genome...")
-    if not os.path.exists(clover_genome_file):
+    """Download the clover genome and create a BLAST database if not already present."""
+    if not os.path.exists(clover_genome_file) and not os.path.exists(clover_genome_unzipped_file):
+        logging.info("Downloading clover genome...")
         subprocess.run(["wget", "-O", clover_genome_file, clover_genome_url], check=True)
-    logging.info("Unzipping clover genome...")
-    if not os.path.exists(clover_genome_unzipped_file):
+        logging.info("Unzipping clover genome...")
         subprocess.run(["gunzip", clover_genome_file], check=True)
-    logging.info("Creating BLAST database from clover genome...")
-    subprocess.run(["makeblastdb", "-in", clover_genome_unzipped_file, "-dbtype", "nucl"], check=True)
+    else:
+        logging.info("Clover genome file already exists. Skipping download and unzip steps.")
+    
+    if not os.path.exists(clover_genome_unzipped_file + ".nin"):  # Check for BLAST DB index files
+        logging.info("Creating BLAST database from clover genome...")
+        subprocess.run(["makeblastdb", "-in", clover_genome_unzipped_file, "-dbtype", "nucl"], check=True)
+    else:
+        logging.info("BLAST database already exists. Skipping BLAST database creation step.")
 
 def fetch_sequence(accession, output_file):
     """Fetch the DNA sequence for a given GenBank accession number and save it to a file."""
@@ -45,7 +50,7 @@ def fetch_sequence(accession, output_file):
     logging.info(f"Saving sequence to {output_file}...")
     with open(output_file, "w") as file:
         SeqIO.write(record, file, "fasta")
-    return record.seq
+    return output_file
 
 def fetch_protein_sequence(accession, output_file):
     """Fetch the protein sequence for a given GenBank accession number and save it to a file."""
@@ -56,7 +61,7 @@ def fetch_protein_sequence(accession, output_file):
     logging.info(f"Saving protein sequence to {output_file}...")
     with open(output_file, "w") as file:
         SeqIO.write(record, file, "fasta")
-    return record.seq
+    return output_file
 
 def local_blast_search(query_file, db, output_file):
     """Perform a local BLAST search using the downloaded sequences."""
