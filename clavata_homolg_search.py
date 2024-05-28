@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from Bio import Entrez, SeqIO, NCBIWWW, NCBIXML
+from Bio import Entrez, SeqIO
+from Bio.Blast import NCBIWWW, NCBIXML
 
 # Define your email for NCBI
 Entrez.email = "joseph.bedell@gmail.com"
