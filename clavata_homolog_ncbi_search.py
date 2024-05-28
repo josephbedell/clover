@@ -4,7 +4,7 @@ import logging
 import time
 from Bio import Entrez, SeqIO
 from Bio.Blast import NCBIWWW, NCBIXML
-from requests.exceptions import Timeout
+import requests
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -43,16 +43,16 @@ def fetch_protein_sequence(accession, output_file):
     return record.seq
 
 def search_online_blast(sequence, program, db, organism, accession):
-    """Search for homologs of a given sequence using NCBI online BLAST."""
+    """Search for homologs of a given sequence using NCBI online BLAST with a timeout."""
     logging.info(f"Performing BLAST search for {accession} against {db} database with {program}...")
     try:
         start_time = time.time()
-        result_handle = NCBIWWW.qblast(program, db, str(sequence), entrez_query=f"{organism}[Organism]", timeout=600)
+        result_handle = NCBIWWW.qblast(program, db, str(sequence), entrez_query=f"{organism}[Organism]")
         blast_records = NCBIXML.read(result_handle)
         end_time = time.time()
         logging.info(f"BLAST search completed in {end_time - start_time:.2f} seconds")
         return blast_records
-    except Timeout:
+    except requests.exceptions.Timeout:
         logging.error("BLAST search timed out.")
         return None
 
