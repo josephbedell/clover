@@ -46,8 +46,12 @@ def fetch_protein_sequence(accession, output_file):
 def search_online_blast(sequence, program, db, organism, accession, assembly):
     """Search for homologs of a given sequence using NCBI online BLAST with a specified genome assembly."""
     logging.info(f"Performing BLAST search for {accession} against {db} database with {program}...")
-    entrez_query = f"{organism}[Organism] AND {assembly}[Assembly]"
+    entrez_query = f"{organism}[Organism] OR {assembly}[Assembly]"
     result_handle = NCBIWWW.qblast(program, db, str(sequence), entrez_query=entrez_query)
+    with open(f"{accession}_{program}_{db}_results.xml", "w") as out_handle:
+        out_handle.write(result_handle.read())
+    result_handle.close()
+    result_handle = open(f"{accession}_{program}_{db}_results.xml")
     blast_records = NCBIXML.read(result_handle)
     return blast_records
 
