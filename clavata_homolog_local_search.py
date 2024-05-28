@@ -71,15 +71,26 @@ def local_blast_search(query_file, db, output_file):
         "-outfmt", "5"
     ], check=True)
 
-def parse_blast_results(output_file):
-    """Parse and print BLAST search results."""
+def parse_blast_results(output_file, results_file):
+    """Parse BLAST search results and save to a tab-delimited file."""
     logging.info(f"Parsing BLAST results from {output_file}...")
     with open(output_file) as result_handle:
-        blast_records = NCBIXML.read(result_handle)
-        for alignment in blast_records.alignments:
-            for hsp in alignment.hsps:
-                if hsp.expect < 0.05:
-                    logging.info(f"Sequence: {alignment.title}\nLength: {alignment.length}\nE-value: {hsp.expect}\n")
+        blast_records = NCBIXML.parse(result_handle)  # Use parse() instead of read() for iterable
+        with open(results_file, "w") as out_handle:
+            out_handle.write("query\tqlength\tsubject\tslength\tevalue\tpercent_id\taln_length\tnum_identities\n")
+            for record in blast_records:
+                for alignment in record.alignments:
+                    for hsp in alignment.hsps:
+                        if hsp.expect < 0.05:
+                            query = record.query
+                            qlength = record.query_length
+                            subject = alignment.title
+                            slength = alignment.length
+                            evalue = hsp.expect
+                            percent_id = (hsp.identities / hsp.align_length) * 100
+                            aln_length = hsp.align_length
+                            num_identities = hsp.identities
+                            out_handle.write(f"{query}\t{qlength}\t{subject}\t{slength}\t{evalue}\t{percent_id:.2f}\t{aln_length}\t{num_identities}\n")
 
 def main():
     # Download and create BLAST database for the clover genome
@@ -95,11 +106,11 @@ def main():
     # Perform local BLAST search for CLV1 sequences
     for seq_file in clv1_sequence_files:
         local_blast_search(seq_file, clover_genome_unzipped_file, f"{seq_file}_blast.xml")
-        parse_blast_results(f"{seq_file}_blast.xml")
+        parse_blast_results(f"{seq_file}_blast.xml", f"{seq_file}_blast_results.tsv")
 
     # Perform local BLAST search for BAM3 sequence
     local_blast_search(bam3_sequence_file, clover_genome_unzipped_file, f"{bam3_sequence_file}_blast.xml")
-    parse_blast_results(f"{bam3_sequence_file}_blast.xml")
+    parse_blast_results(f"{bam3_sequence_file}_blast.xml", f"{bam3_sequence_file}_blast_results.tsv")
 
 if __name__ == "__main__":
     logging.info("Starting local BLAST search script for CLV1 and BAM3 against clover genome...")
