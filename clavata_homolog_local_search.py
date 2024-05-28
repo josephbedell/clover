@@ -63,11 +63,11 @@ def fetch_protein_sequence(accession, output_file):
         SeqIO.write(record, file, "fasta")
     return output_file
 
-def local_blast_search(query_file, db, output_file):
+def local_blast_search(query_file, db, output_file, blast_type="blastn"):
     """Perform a local BLAST search using the downloaded sequences."""
-    logging.info(f"Performing local BLAST search for {query_file} against {db}...")
+    logging.info(f"Performing local {blast_type} search for {query_file} against {db}...")
     subprocess.run([
-        "blastn", "-query", query_file, "-db", db, "-out", output_file,
+        blast_type, "-query", query_file, "-db", db, "-out", output_file,
         "-outfmt", "5"
     ], check=True)
 
@@ -96,23 +96,39 @@ def main():
     # Download and create BLAST database for the clover genome
     download_clover_genome()
 
-    # Fetch sequences for CLV1 and BAM3
-    clv1_sequence_files = []
+    # Fetch sequences for CLV1 and BAM3 mRNA
+    clv1_mrna_files = []
     for accession in clv1_mrna_accessions:
-        clv1_sequence_files.append(fetch_sequence(accession, f"{accession}.fna"))
+        clv1_mrna_files.append(fetch_sequence(accession, f"{accession}.fna"))
 
-    bam3_sequence_file = fetch_sequence(bam3_mrna_accession, f"{bam3_mrna_accession}.fna")
+    bam3_mrna_file = fetch_sequence(bam3_mrna_accession, f"{bam3_mrna_accession}.fna")
 
-    # Perform local BLAST search for CLV1 sequences
-    for seq_file in clv1_sequence_files:
-        local_blast_search(seq_file, clover_genome_unzipped_file, f"{seq_file}_blast.xml")
+    # Fetch sequences for CLV1 and BAM3 protein
+    clv1_protein_files = []
+    for accession in clv1_protein_accessions:
+        clv1_protein_files.append(fetch_protein_sequence(accession, f"{accession}.faa"))
+
+    bam3_protein_file = fetch_protein_sequence(bam3_protein_accession, f"{bam3_protein_accession}.faa")
+
+    # Perform local BLAST search for CLV1 mRNA sequences
+    for seq_file in clv1_mrna_files:
+        local_blast_search(seq_file, clover_genome_unzipped_file, f"{seq_file}_blast.xml", blast_type="blastn")
         parse_blast_results(f"{seq_file}_blast.xml", f"{seq_file}_blast_results.tsv")
 
-    # Perform local BLAST search for BAM3 sequence
-    local_blast_search(bam3_sequence_file, clover_genome_unzipped_file, f"{bam3_sequence_file}_blast.xml")
-    parse_blast_results(f"{bam3_sequence_file}_blast.xml", f"{bam3_sequence_file}_blast_results.tsv")
+    # Perform local BLAST search for BAM3 mRNA sequence
+    local_blast_search(bam3_mrna_file, clover_genome_unzipped_file, f"{bam3_mrna_file}_blast.xml", blast_type="blastn")
+    parse_blast_results(f"{bam3_mrna_file}_blast.xml", f"{bam3_mrna_file}_blast_results.tsv")
+
+    # Perform local tblastn search for CLV1 protein sequences
+    for protein_file in clv1_protein_files:
+        local_blast_search(protein_file, clover_genome_unzipped_file, f"{protein_file}_tblastn.xml", blast_type="tblastn")
+        parse_blast_results(f"{protein_file}_tblastn.xml", f"{protein_file}_tblastn_results.tsv")
+
+    # Perform local tblastn search for BAM3 protein sequence
+    local_blast_search(bam3_protein_file, clover_genome_unzipped_file, f"{bam3_protein_file}_tblastn.xml", blast_type="tblastn")
+    parse_blast_results(f"{bam3_protein_file}_tblastn.xml", f"{bam3_protein_file}_tblastn_results.tsv")
 
 if __name__ == "__main__":
-    logging.info("Starting local BLAST search script for CLV1 and BAM3 against clover genome...")
+    logging.info("Starting local BLAST and TBLASTN search script for CLV1 and BAM3 against clover genome...")
     main()
     logging.info("Script completed.")
