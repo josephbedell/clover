@@ -14,11 +14,12 @@ Entrez.email = "joseph.bedell@gmail.com"
 
 # Define the GenBank accession numbers for the proteins to be used in the searches
 protein_accessions = [
-    "XP_019093641.1", "XP_010471716.1",  # CLV1 proteins
-    "NP_193760.1",                       # BAM3 protein
-    "XP_003556845.1",                    # GmNARK protein (Soybean)
-    "XP_019447609.1",                    # LjHAR1 protein (Lotus japonicus)
-    "XP_013464938.1"                     # MtSUNN protein (Medicago truncatula)
+    "NP_973750.1",  # FT protein (Arabidopsis thaliana)
+    "NP_180516.1",  # SOC1 protein (Arabidopsis thaliana)
+    "NP_187054.1",  # LFY protein (Arabidopsis thaliana)
+    "NP_173076.1",  # AP1 protein (Arabidopsis thaliana)
+    "NP_195211.1",  # FLC protein (Arabidopsis thaliana)
+    "NP_197116.1"   # VRN1 protein (Arabidopsis thaliana)
 ]
 
 # Define the Clover genome URL and file name
@@ -26,8 +27,8 @@ clover_genome_url = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/030/408/175/GC
 clover_genome_file = "GCA_030408175.1_genomic.fna.gz"
 clover_genome_unzipped_file = "GCA_030408175.1_genomic.fna"
 
-# Define the collection of proteins from the four-leaf locus on chromosome 2
-four_leaf_proteins_file = "four_leaf_proteins.faa"  # Update this with the actual file path
+# Define the collection of proteins from the chromosome 2 region
+chr2_region_proteins_file = "chr2_region_proteins.faa"  # Update this with the actual file path
 
 def download_clover_genome():
     """Download the clover genome and create a BLAST database if not already present."""
@@ -97,12 +98,12 @@ def main():
         local_blast_search(protein_file, clover_genome_unzipped_file, f"{protein_file}_tblastn.xml", blast_type="tblastn")
         parse_blast_results(f"{protein_file}_tblastn.xml", f"{protein_file}_tblastn_results.tsv", clover_genome_unzipped_file, "tblastn")
 
-    # Perform local blastp search for the proteins against the four-leaf locus protein collection
+    # Perform local blastp search for the proteins against the chromosome 2 region protein collection
     for protein_file in protein_files:
-        local_blast_search(protein_file, four_leaf_proteins_file, f"{protein_file}_blastp.xml", blast_type="blastp")
-        parse_blast_results(f"{protein_file}_blastp.xml", f"{protein_file}_blastp_results.tsv", four_leaf_proteins_file, "blastp")
+        local_blast_search(protein_file, chr2_region_proteins_file, f"{protein_file}_blastp.xml", blast_type="blastp")
+        parse_blast_results(f"{protein_file}_blastp.xml", f"{protein_file}_blastp_results.tsv", chr2_region_proteins_file, "blastp")
 
 if __name__ == "__main__":
-    logging.info("Starting local BLASTP and TBLASTN search script for homologs against clover genome and four-leaf locus proteins...")
+    logging.info("Starting local BLASTP and TBLASTN search script for homologs against clover genome and chromosome 2 region proteins...")
     main()
     logging.info("Script completed.")
