@@ -1,24 +1,35 @@
 #!/usr/bin/env python3
 
-import requests
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+import time
 
 def check_genome_status():
-    # Assuming this URL points directly to the search results for Trifolium repens
     url = 'https://portal.darwintreeoflife.org/data/root/details/Trifolium%20repens'
-    response = requests.get(url)
     
-    if response.status_code != 200:
-        print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
-        return
+    # Set up the Selenium WebDriver
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run headless Chrome
+    chrome_service = Service('/home/jbedell/bin/chromedriver')  # Update this path to the location of chromedriver
+
+    driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
+    driver.get(url)
     
-    soup = BeautifulSoup(response.content, 'html.parser')
+    # Allow time for the page to load
+    time.sleep(5)
+
+    # Get the page source after JavaScript has rendered
+    html = driver.page_source
+    driver.quit()
     
-    # Print a portion of the parsed HTML to inspect the structure
-    print("HTML Content:")
-    print(soup.prettify()[:1000])  # Print the first 1000 characters for inspection
+    # Parse the HTML with BeautifulSoup
+    soup = BeautifulSoup(html, 'html.parser')
     
-    # Update this part based on the actual structure
+    # Find status elements based on the updated structure
     status_elements = soup.find_all("div", class_="card bg-lite mb-3 filter-top")
     if not status_elements:
         print("No status elements found.")
@@ -39,6 +50,29 @@ def check_genome_status():
         print(f"Title: {title}")
         print(f"Details: {details}")
         print("-----")
+
+    # Extract additional details
+    biosample_id = soup.find("div", {"class": "biosample-id"})
+    organism = soup.find("div", {"class": "organism"})
+    common_name = soup.find("div", {"class": "common-name"})
+    
+    if biosample_id:
+        biosample_id_text = biosample_id.get_text(strip=True)
+        print(f"Biosample ID: {biosample_id_text}")
+    else:
+        print("Biosample ID not found")
+
+    if organism:
+        organism_text = organism.get_text(strip=True)
+        print(f"Organism: {organism_text}")
+    else:
+        print("Organism not found")
+
+    if common_name:
+        common_name_text = common_name.get_text(strip=True)
+        print(f"Common Name: {common_name_text}")
+    else:
+        print("Common Name not found")
 
 # Call the function
 check_genome_status()
