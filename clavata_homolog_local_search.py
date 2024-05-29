@@ -79,19 +79,16 @@ def parse_blast_results(output_file, results_file, db, blast_type):
         with open(results_file, "w") as out_handle:
             out_handle.write("query\tqlength\tsubject\tslength\tevalue\tpercent_id\taln_length\tnum_identities\tdatabase\tblast_type\n")
             for record in blast_records:
-                top_hits = sorted(record.alignments, key=lambda aln: min(hsp.expect for hsp in aln.hsps))[:5]
-                for alignment in top_hits:
+                hits = []
+                for alignment in record.alignments:
                     for hsp in alignment.hsps:
                         if hsp.expect < 0.05:
-                            query = record.query
-                            qlength = record.query_length
-                            subject = alignment.title
-                            slength = alignment.length
-                            evalue = hsp.expect
-                            percent_id = (hsp.identities / hsp.align_length) * 100
-                            aln_length = hsp.align_length
-                            num_identities = hsp.identities
-                            out_handle.write(f"{query}\t{qlength}\t{subject}\t{slength}\t{evalue}\t{percent_id:.2f}\t{aln_length}\t{num_identities}\t{db}\t{blast_type}\n")
+                            hits.append((record.query, record.query_length, alignment.title, alignment.length,
+                                         hsp.expect, (hsp.identities / hsp.align_length) * 100, hsp.align_length, 
+                                         hsp.identities, db, blast_type))
+                top_hits = sorted(hits, key=lambda x: x[4])[:5]
+                for hit in top_hits:
+                    out_handle.write("\t".join(map(str, hit)) + "\n")
 
 def main():
     # Download and create BLAST database for the clover genome
