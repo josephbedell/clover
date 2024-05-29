@@ -7,7 +7,7 @@ from Bio import Entrez, SeqIO
 from Bio.Blast import NCBIXML
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname=s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Define your email for NCBI
 Entrez.email = "joseph.bedell@gmail.com"
@@ -18,7 +18,7 @@ protein_accessions = [
     "NP_193760.1",                       # BAM3 protein
     "XP_003556845.1",                    # GmNARK protein (Soybean)
     "XP_019447609.1",                    # LjHAR1 protein (Lotus japonicus)
-    "XP_013464938.1"                     # MtSUNN protein (Medicago truncatula)
+    "XP_013464938.1",                    # MtSUNN protein (Medicago truncatula)
     "NP_973750.1",  # FT protein (Arabidopsis thaliana)
     "NP_180516.1",  # SOC1 protein (Arabidopsis thaliana)
     "NP_187054.1",  # LFY protein (Arabidopsis thaliana)
