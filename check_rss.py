@@ -11,5 +11,9 @@ def check_rss_feed(url):
         print("-----")
 
 # Example feed URL (adjust as needed)
-rss_url = 'https://pubmed.ncbi.nlm.nih.gov/rss/search/1RR2b2xR_jtTovcX9bGLYpZ5H3tBbkA5AuF7hByNqk-xu5qYzZ/?limit=100&utm_campaign=pubmed-2&fc=20220514032808'
+#rss_url = 'https://pubmed.ncbi.nlm.nih.gov/rss/search/1RR2b2xR_jtTovcX9bGLYpZ5H3tBbkA5AuF7hByNqk-xu5qYzZ/?limit=100&utm_campaign=pubmed-2&fc=20220514032808'
+# BLAST rss
+#rss_url = 'https://www.ncbi.nlm.nih.gov/feed/rss.cgi?ChanKey=blastfeed'
+# Gene News
+rss_url = 'https://www.ncbi.nlm.nih.gov/feed/rss.cgi?ChanKey=genenews'
 check_rss_feed(rss_url)
