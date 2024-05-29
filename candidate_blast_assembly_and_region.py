@@ -7,13 +7,18 @@ from Bio import Entrez, SeqIO
 from Bio.Blast import NCBIXML
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname=s - %(message)s')
 
 # Define your email for NCBI
 Entrez.email = "joseph.bedell@gmail.com"
 
 # Define the GenBank accession numbers for the proteins to be used in the searches
 protein_accessions = [
+    "XP_019093641.1", "XP_010471716.1",  # CLV1 proteins
+    "NP_193760.1",                       # BAM3 protein
+    "XP_003556845.1",                    # GmNARK protein (Soybean)
+    "XP_019447609.1",                    # LjHAR1 protein (Lotus japonicus)
+    "XP_013464938.1"                     # MtSUNN protein (Medicago truncatula)
     "NP_973750.1",  # FT protein (Arabidopsis thaliana)
     "NP_180516.1",  # SOC1 protein (Arabidopsis thaliana)
     "NP_187054.1",  # LFY protein (Arabidopsis thaliana)
@@ -28,7 +33,7 @@ clover_genome_file = "GCA_030408175.1_genomic.fna.gz"
 clover_genome_unzipped_file = "GCA_030408175.1_genomic.fna"
 
 # Define the collection of proteins from the chromosome 2 region
-chr2_region_proteins_file = "chr2_region_proteins.faa"  # Update this with the actual file path
+chr2_region_proteins_file = "chr2_region_proteins.faa"
 
 def download_clover_genome():
     """Download the clover genome and create a BLAST database if not already present."""
@@ -45,6 +50,11 @@ def download_clover_genome():
         subprocess.run(["makeblastdb", "-in", clover_genome_unzipped_file, "-dbtype", "nucl"], check=True)
     else:
         logging.info("BLAST database already exists. Skipping BLAST database creation step.")
+
+def create_protein_blast_db(protein_fasta):
+    """Create a BLAST protein database from the given fasta file."""
+    logging.info(f"Creating BLAST database from {protein_fasta}...")
+    subprocess.run(["makeblastdb", "-in", protein_fasta, "-dbtype", "prot"], check=True)
 
 def fetch_protein_sequence(accession, output_file):
     """Fetch the protein sequence for a given GenBank accession number and save it to a file."""
@@ -87,6 +97,9 @@ def parse_blast_results(output_file, results_file, db, blast_type):
 def main():
     # Download and create BLAST database for the clover genome
     download_clover_genome()
+
+    # Create BLAST database for the chromosome 2 region proteins
+    create_protein_blast_db(chr2_region_proteins_file)
 
     # Fetch sequences for the proteins
     protein_files = []
