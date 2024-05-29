@@ -29,12 +29,13 @@ def parse_genbank(file_path, start, end, output_file):
                         protein_seq = feature.qualifiers["translation"][0]
                         protein_id = feature.qualifiers.get("protein_id", ["unknown_protein_id"])[0]
                         protein_desc = feature.qualifiers.get("product", ["unknown_product"])[0]
-                        proteins.append((protein_id, protein_desc, protein_seq))
+                        proteins.append((protein_id, protein_desc, protein_seq, location))
                         logging.info(f"Extracted protein: {protein_id} - {protein_desc}")
 
     with open(output_file, "w") as fasta_file:
-        for protein_id, protein_desc, protein_seq in proteins:
-            fasta_file.write(f">{protein_id} {protein_desc}\n")
+        for protein_id, protein_desc, protein_seq, location in proteins:
+            location_str = f"chr2:{location.start}..{location.end}"
+            fasta_file.write(f">{protein_id} {protein_desc} {location_str}\n")
             fasta_file.write(f"{protein_seq}\n")
 
     if not proteins:
