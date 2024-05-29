@@ -14,17 +14,17 @@ Entrez.email = "joseph.bedell@gmail.com"
 
 # Define the GenBank accession numbers for the proteins to be used in the searches
 protein_accessions = [
-    "XP_019093641.1", "XP_010471716.1",  # CLV1 proteins
-    "NP_193760.1",                       # BAM3 protein
-    "XP_003556845.1",                    # GmNARK protein (Soybean)
-    "XP_019447609.1",                    # LjHAR1 protein (Lotus japonicus)
-    "XP_013464938.1",                    # MtSUNN protein (Medicago truncatula)
-    "NP_973750.1",  # FT protein (Arabidopsis thaliana)
-    "NP_180516.1",  # SOC1 protein (Arabidopsis thaliana)
-    "NP_187054.1",  # LFY protein (Arabidopsis thaliana)
-    "NP_173076.1",  # AP1 protein (Arabidopsis thaliana)
-    "NP_195211.1",  # FLC protein (Arabidopsis thaliana)
-    "NP_197116.1"   # VRN1 protein (Arabidopsis thaliana)
+    "XP_019093641.1",   # CLV1 protein
+    "NP_193760.1",      # BAM3 protein
+    "XP_003556845.1",   # GmNARK protein (Soybean)
+    "XP_019447609.1",   # LjHAR1 protein (Lotus japonicus)
+    "XP_013464938.1",   # MtSUNN protein (Medicago truncatula)
+    "NP_001240185.1",   # FLOWERING LOCUS T [Glycine max]
+    "NP_180516.1",      # SOC1 protein (Arabidopsis thaliana)
+    "NP_187054.1",      # LFY protein (Arabidopsis thaliana)
+    "NP_173076.1",      # AP1 protein (Arabidopsis thaliana)
+    "NP_195211.1",      # FLC protein (Arabidopsis thaliana)
+    "NP_197116.1"       # VRN1 protein (Arabidopsis thaliana)
 ]
 
 # Define the Clover genome URL and file name
