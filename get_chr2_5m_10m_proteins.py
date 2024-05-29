@@ -1,30 +1,21 @@
 #!/usr/bin/env python3
 
 import logging
-import requests
 from Bio import SeqIO
-from io import StringIO
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Define the URL for the GenBank file
-genbank_url = "https://www.ncbi.nlm.nih.gov/nuccore/CP125838.1?report=genbank&log$=seqview&format=text"
+# Define the GenBank file path
+genbank_file_path = "chr2.gb"
 
 # Define the output file for the multi-sequence FASTA
 output_fasta_file = "chr2_region_proteins.faa"
 
-def fetch_genbank_file(url):
-    """Fetch the GenBank file from the provided URL."""
-    logging.info(f"Fetching GenBank file from {url}...")
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.text
-
-def parse_genbank(genbank_data, start, end, output_file):
+def parse_genbank(file_path, start, end, output_file):
     """Parse the GenBank file and extract protein sequences within the specified range."""
-    logging.info(f"Parsing GenBank file and extracting proteins between {start}-{end}...")
-    records = SeqIO.parse(StringIO(genbank_data), "genbank")
+    logging.info(f"Parsing GenBank file {file_path} and extracting proteins between {start}-{end}...")
+    records = SeqIO.parse(file_path, "genbank")
     proteins = []
 
     for record in records:
@@ -32,8 +23,8 @@ def parse_genbank(genbank_data, start, end, output_file):
         for feature in record.features:
             if feature.type == "CDS":
                 location = feature.location
-                logging.info(f"Found CDS feature from {location.start.position} to {location.end.position}")
-                if (start <= location.start.position <= end) or (start <= location.end.position <= end):
+                logging.info(f"Found CDS feature from {location.start} to {location.end}")
+                if (start <= location.start <= end) or (start <= location.end <= end):
                     if "translation" in feature.qualifiers:
                         protein_seq = feature.qualifiers["translation"][0]
                         protein_id = feature.qualifiers.get("protein_id", ["unknown_protein_id"])[0]
@@ -50,8 +41,7 @@ def parse_genbank(genbank_data, start, end, output_file):
         logging.warning("No proteins found in the specified range.")
 
 def main():
-    genbank_data = fetch_genbank_file(genbank_url)
-    parse_genbank(genbank_data, 5000000, 10000000, output_fasta_file)
+    parse_genbank(genbank_file_path, 5000000, 10000000, output_fasta_file)
     logging.info(f"Protein sequences saved to {output_fasta_file}")
 
 if __name__ == "__main__":
