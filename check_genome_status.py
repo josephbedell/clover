@@ -52,7 +52,7 @@ def check_genome_status():
         print("-----")
 
     # Extract additional details
-    biosample_id = soup.find("div", {"class": "biosample-id"})
+    biosample_id = soup.find("div", {"class": "mat-mdc-tab-body ng-tns-c1615493245-18 ng-star-inserted"})
     organism = soup.find("div", {"class": "organism"})
     common_name = soup.find("div", {"class": "common-name"})
     
