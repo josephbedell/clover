@@ -1,21 +1,13 @@
 #!/usr/bin/env python3
 
 import logging
+import sys
 from Bio import SeqIO
 from pptx import Presentation
 from pptx.util import Inches
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Define the GenBank file path
-genbank_file_path = "chr2.gb"
-
-# Define the output file for the multi-sequence FASTA
-output_fasta_file = "chr2_region_proteins.faa"
-
-# Define the output PowerPoint file
-output_pptx_file = "protein_summary.pptx"
 
 def parse_genbank(file_path, start, end, output_file):
     """Parse the GenBank file and extract protein sequences within the specified range."""
@@ -60,7 +52,7 @@ def create_presentation(proteins, pptx_file):
     subtitle = slide.placeholders[1]
 
     title.text = "Protein Summary"
-    subtitle.text = "Extracted from GenBank file: chr2.gb"
+    subtitle.text = "Extracted from GenBank file"
 
     # Protein slides
     for protein_id, protein_desc, protein_seq, location in proteins:
@@ -82,7 +74,17 @@ def create_presentation(proteins, pptx_file):
     logging.info(f"PowerPoint presentation saved to {pptx_file}")
 
 def main():
-    proteins = parse_genbank(genbank_file_path, 5000000, 10000000, output_fasta_file)
+    if len(sys.argv) < 3:
+        print("Usage: ./create_protein_summary_ppt.py <genbank_file> <output_pptx_file> [<start> <end>]")
+        sys.exit(1)
+
+    genbank_file_path = sys.argv[1]
+    output_pptx_file = sys.argv[2]
+    start = int(sys.argv[3]) if len(sys.argv) > 3 else 5000000
+    end = int(sys.argv[4]) if len(sys.argv) > 4 else 10000000
+    output_fasta_file = "chr2_region_proteins.faa"
+
+    proteins = parse_genbank(genbank_file_path, start, end, output_fasta_file)
     if proteins:
         create_presentation(proteins, output_pptx_file)
     logging.info("Script completed.")
