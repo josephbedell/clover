@@ -67,15 +67,16 @@ def create_presentation(proteins, pptx_file):
         location_str = f"Location: chr2:{location.start}..{location.end}"
         seq_str = f"Sequence: {protein_seq[:60]}... (length: {len(protein_seq)} aa)"
 
-        text_frame.add_paragraph(location_str)
-        text_frame.add_paragraph(seq_str)
+        text_frame.text = location_str
+        p = text_frame.add_paragraph()
+        p.text = seq_str
 
     prs.save(pptx_file)
     logging.info(f"PowerPoint presentation saved to {pptx_file}")
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: ./create_protein_summary_ppt.py <genbank_file> <output_pptx_file> [<start> <end>]")
+        print("Usage: ./create_protein_pptx.py <genbank_file> <output_pptx_file> [<start> <end>]")
         sys.exit(1)
 
     genbank_file_path = sys.argv[1]
