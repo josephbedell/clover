@@ -14,7 +14,7 @@ title.text = "Genetic Fortune Decoded: Using LLMs to Discover Four-Leaf Clover S
 subtitle.text = "A Journey into the Genetics of Luck with AI"
 
 # Add the image only if it is in a supported format
-image_path = 'four_leaf_clover.jpeg'
+image_path = 'four_leaf_clover.png'
 try:
     slide.shapes.add_picture(image_path, Inches(1), Inches(2.5), height=Inches(2))
 except ValueError as e:
