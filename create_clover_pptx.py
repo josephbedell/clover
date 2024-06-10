@@ -12,7 +12,13 @@ title = slide.shapes.title
 subtitle = slide.placeholders[1]
 title.text = "Genetic Fortune Decoded: Using LLMs to Discover Four-Leaf Clover Secrets"
 subtitle.text = "A Journey into the Genetics of Luck with AI"
-slide.shapes.add_picture('four_leaf_clover.jpeg', Inches(1), Inches(2.5), height=Inches(2))
+
+# Add the image only if it is in a supported format
+image_path = 'four_leaf_clover.jpeg'
+try:
+    slide.shapes.add_picture(image_path, Inches(1), Inches(2.5), height=Inches(2))
+except ValueError as e:
+    print(f"Error adding picture: {e}")
 
 # Slide 2: Introduction
 slide = prs.slides.add_slide(prs.slide_layouts[1])
