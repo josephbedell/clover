@@ -1,5 +1,5 @@
 # Four-Leaf Clover Genetic Analysis Summary
-<img src="IMG_8232.jpeg" alt="Image description" width="200"/>
+<img src="four_leaf_clover.jpeg" alt="Four leaf clover found on my dog walk" width="200"/>
 
 # Summary of Genetic Analysis for the Four-Leaf Clover Trait
 
