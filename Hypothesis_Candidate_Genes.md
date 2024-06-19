@@ -1,4 +1,4 @@
-The hypothesis for how these nine candidate genes may be involved in the four-leaf trait can be broken down into two main groups: meristem regulation and flowering time regulation. Here’s a detailed look at each gene and its potential involvement:
+The hypothesis for how these candidate genes may be involved in the four-leaf trait can be broken down into two main groups: meristem regulation and flowering time regulation. Here’s a detailed look at each gene and its potential involvement:
 
 ### Meristem Regulation Genes
 
